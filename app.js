@@ -10,21 +10,30 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/templates/index.html');
   });
 
+
 io.sockets.on('connection', function (socket, pseudo) {
 
-    // Dès qu'on nous donne un pseudo, on le stocke en variable de session
     socket.on('nickname', function(pseudo) {
         socket.pseudo = pseudo;
     });
 
+    socket.on('room', function(room) {
+        socket.join(room);
+        console.log(socket.pseudo + ' a rejoins ou crée la salle: ' + room)
+    });
+
     // Dès qu'on reçoit un "message" (clic sur le bouton), on le note dans la console
-    socket.on('message', function (message) {
+    socket.on('who', function (message) {
         // On récupère le pseudo de celui qui a cliqué dans les variables de session
-        console.log(socket.pseudo + message);
+        // console.log(socket.pseudo + message);
+        console.log(io.sockets.clients());
+    }); 
+
+    socket.on('liste_room', function () {
+        console.log(io.sockets.adapter.rooms);
     }); 
 });
 
-
 http.listen(port, () => {
     console.log('server open: http://localhost:' + port + '/');
-  });
+});
